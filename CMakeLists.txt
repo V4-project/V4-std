@@ -30,9 +30,9 @@ endif()
 # V4Std Library (placeholder for now)
 # ============================================================================
 
-# Will be populated in subsequent commits
+# V4Std library sources
 set(V4STD_SOURCES
-    # src/ddt.cpp
+    src/ddt.cpp
     # src/sys_handlers.cpp
     # src/sys_led.cpp
     # src/sys_button.cpp
@@ -40,15 +40,13 @@ set(V4STD_SOURCES
     # src/capability.cpp
 )
 
-if(V4STD_SOURCES)
-  add_library(v4std STATIC ${V4STD_SOURCES})
+add_library(v4std STATIC ${V4STD_SOURCES})
 
-  target_include_directories(
-    v4std
-    PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-           $<INSTALL_INTERFACE:include>
-    PRIVATE ${PROJECT_SOURCE_DIR}/src)
-endif()
+target_include_directories(
+  v4std
+  PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+         $<INSTALL_INTERFACE:include>
+  PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 # ============================================================================
 # Tests
@@ -61,6 +59,11 @@ if(V4STD_BUILD_TESTS)
   add_executable(test_ddt_types tests/test_ddt_types.cpp)
   target_include_directories(test_ddt_types PRIVATE ${PROJECT_SOURCE_DIR}/include)
   add_test(NAME test_ddt_types COMMAND test_ddt_types)
+
+  # DDT API test
+  add_executable(test_ddt tests/test_ddt.cpp)
+  target_link_libraries(test_ddt PRIVATE v4std)
+  add_test(NAME test_ddt COMMAND test_ddt)
 endif()
 
 # ============================================================================
