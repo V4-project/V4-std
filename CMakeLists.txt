@@ -56,8 +56,11 @@ endif()
 
 if(V4STD_BUILD_TESTS)
   enable_testing()
-  # Tests will be added in subsequent commits
-  # add_subdirectory(tests)
+
+  # DDT types test
+  add_executable(test_ddt_types tests/test_ddt_types.cpp)
+  target_include_directories(test_ddt_types PRIVATE ${PROJECT_SOURCE_DIR}/include)
+  add_test(NAME test_ddt_types COMMAND test_ddt_types)
 endif()
 
 # ============================================================================
