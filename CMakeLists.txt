@@ -55,7 +55,7 @@ add_custom_target(generate_sys_ids DEPENDS "${V4SYS_IDS_H}")
 # V4Std library sources
 set(V4STD_SOURCES
     src/ddt.cpp
-    # src/sys_handlers.cpp
+    src/sys_handlers.cpp
     # src/sys_led.cpp
     # src/sys_button.cpp
     # src/sys_timer.cpp
@@ -95,6 +95,11 @@ if(V4STD_BUILD_TESTS)
   target_link_libraries(test_sys_ids PRIVATE v4std)
   add_dependencies(test_sys_ids generate_sys_ids)
   add_test(NAME test_sys_ids COMMAND test_sys_ids)
+
+  # SYS handlers test
+  add_executable(test_sys_handlers tests/test_sys_handlers.cpp)
+  target_link_libraries(test_sys_handlers PRIVATE v4std)
+  add_test(NAME test_sys_handlers COMMAND test_sys_handlers)
 endif()
 
 # ============================================================================
