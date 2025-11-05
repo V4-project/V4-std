@@ -1,0 +1,167 @@
+/**
+ * @file v4sys_ids.def
+ * @brief V4-std SYS call ID definitions
+ *
+ * This file is processed by CMake to generate sys_ids.h
+ * Format: V4SYS_DEF(NAME, VALUE, "DESCRIPTION")
+ *
+ * SYS Call Ranges:
+ * - 0x0100-0x01FF: LED operations
+ * - 0x0200-0x02FF: BUTTON operations
+ * - 0x0300-0x03FF: TIMER operations
+ * - 0x0400-0x04FF: UART operations
+ * - 0x0500-0x05FF: I2C operations
+ * - 0x0600-0x06FF: SPI operations
+ * - 0x0700-0x07FF: ADC operations
+ * - 0x0800-0x08FF: PWM operations
+ * - 0x0900-0x09FF: STORAGE operations
+ * - 0x0A00-0x0AFF: DISPLAY operations
+ * - 0x0B00-0x0BFF: RNG operations
+ * - 0x0F00-0x0FFF: System/Capability operations
+ *
+ * @copyright Copyright 2025 V4 Project
+ * @license Dual-licensed under MIT or Apache-2.0
+ */
+
+// ============================================================================
+// LED Operations (0x0100-0x01FF)
+// ============================================================================
+
+// LED control
+// Stack: ( kind role index -- success )
+V4SYS_DEF(LED_ON,      0x0100, "Turn LED on by kind/role/index")
+V4SYS_DEF(LED_OFF,     0x0101, "Turn LED off by kind/role/index")
+V4SYS_DEF(LED_TOGGLE,  0x0102, "Toggle LED by kind/role/index")
+V4SYS_DEF(LED_SET,     0x0103, "Set LED state (0=off, 1=on) by kind/role/index")
+
+// LED query
+// Stack: ( kind role index -- state )
+V4SYS_DEF(LED_GET,     0x0110, "Get LED state (0=off, 1=on)")
+
+// ============================================================================
+// BUTTON Operations (0x0200-0x02FF)
+// ============================================================================
+
+// Button read
+// Stack: ( kind role index -- pressed )
+V4SYS_DEF(BUTTON_READ,     0x0200, "Read button state (0=released, 1=pressed)")
+
+// Button wait (blocks until press/release)
+// Stack: ( kind role index state -- )
+V4SYS_DEF(BUTTON_WAIT,     0x0201, "Wait for button state (0=release, 1=press)")
+
+// ============================================================================
+// TIMER Operations (0x0300-0x03FF)
+// ============================================================================
+
+// Timer control
+// Stack: ( kind role index interval_ms -- success )
+V4SYS_DEF(TIMER_START,    0x0300, "Start periodic timer with interval")
+V4SYS_DEF(TIMER_STOP,     0x0301, "Stop timer")
+
+// Timer oneshot
+// Stack: ( kind role index delay_ms -- success )
+V4SYS_DEF(TIMER_ONESHOT,  0x0302, "Start oneshot timer")
+
+// Timer query
+// Stack: ( kind role index -- running )
+V4SYS_DEF(TIMER_RUNNING,  0x0310, "Check if timer is running")
+
+// ============================================================================
+// UART Operations (0x0400-0x04FF)
+// ============================================================================
+
+// UART I/O
+// Stack: ( kind role index -- char ) or ( kind role index char -- success )
+V4SYS_DEF(UART_READ,      0x0400, "Read one byte from UART")
+V4SYS_DEF(UART_WRITE,     0x0401, "Write one byte to UART")
+V4SYS_DEF(UART_AVAILABLE, 0x0402, "Get number of available bytes")
+
+// ============================================================================
+// I2C Operations (0x0500-0x05FF)
+// ============================================================================
+
+// I2C transfer
+// Stack: ( kind role index addr reg -- value success )
+V4SYS_DEF(I2C_READ_REG,   0x0500, "Read byte from I2C register")
+// Stack: ( kind role index addr reg value -- success )
+V4SYS_DEF(I2C_WRITE_REG,  0x0501, "Write byte to I2C register")
+
+// ============================================================================
+// SPI Operations (0x0600-0x06FF)
+// ============================================================================
+
+// SPI transfer
+// Stack: ( kind role index data -- response success )
+V4SYS_DEF(SPI_TRANSFER,   0x0600, "Transfer byte via SPI")
+
+// ============================================================================
+// ADC Operations (0x0700-0x07FF)
+// ============================================================================
+
+// ADC read
+// Stack: ( kind role index -- value )
+V4SYS_DEF(ADC_READ,       0x0700, "Read ADC value (raw)")
+
+// ============================================================================
+// PWM Operations (0x0800-0x08FF)
+// ============================================================================
+
+// PWM control
+// Stack: ( kind role index duty_percent -- success )
+V4SYS_DEF(PWM_SET,        0x0800, "Set PWM duty cycle (0-100)")
+// Stack: ( kind role index -- )
+V4SYS_DEF(PWM_START,      0x0801, "Start PWM")
+V4SYS_DEF(PWM_STOP,       0x0802, "Stop PWM")
+
+// ============================================================================
+// STORAGE Operations (0x0900-0x09FF)
+// ============================================================================
+
+// Storage I/O
+// Stack: ( kind role index addr -- value success )
+V4SYS_DEF(STORAGE_READ,   0x0900, "Read byte from storage")
+// Stack: ( kind role index addr value -- success )
+V4SYS_DEF(STORAGE_WRITE,  0x0901, "Write byte to storage")
+
+// ============================================================================
+// DISPLAY Operations (0x0A00-0x0AFF)
+// ============================================================================
+
+// Display control
+// Stack: ( kind role index x y char -- success )
+V4SYS_DEF(DISPLAY_PUTC,   0x0A00, "Put character at position")
+// Stack: ( kind role index -- success )
+V4SYS_DEF(DISPLAY_CLEAR,  0x0A01, "Clear display")
+
+// ============================================================================
+// RNG Operations (0x0B00-0x0BFF)
+// ============================================================================
+
+// Random number generation
+// Stack: ( kind role index -- random_value )
+V4SYS_DEF(RNG_READ,       0x0B00, "Read random number")
+
+// ============================================================================
+// System/Capability Operations (0x0F00-0x0FFF)
+// ============================================================================
+
+// Device capability queries
+// Stack: ( kind -- count )
+V4SYS_DEF(CAP_COUNT,      0x0F00, "Get device count by kind")
+
+// Stack: ( kind role index -- exists )
+V4SYS_DEF(CAP_EXISTS,     0x0F01, "Check if device exists")
+
+// Stack: ( kind role index -- flags )
+V4SYS_DEF(CAP_FLAGS,      0x0F02, "Get device flags")
+
+// Stack: ( kind role index -- handle )
+V4SYS_DEF(CAP_HANDLE,     0x0F03, "Get device handle")
+
+// System info
+// Stack: ( -- version )
+V4SYS_DEF(SYS_VERSION,    0x0FF0, "Get V4-std version")
+
+// Stack: ( -- platform_id )
+V4SYS_DEF(SYS_PLATFORM,   0x0FF1, "Get platform identifier")
