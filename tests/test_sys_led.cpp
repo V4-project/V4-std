@@ -50,29 +50,11 @@ class MockDdtProvider : public DdtProvider
   {
     static constexpr v4dev_desc_t devices[] = {
         // STATUS LED (GPIO7, active-high)
-        {
-            .kind = V4DEV_LED,
-            .role = V4ROLE_STATUS,
-            .index = 0,
-            .flags = 0,
-            .handle = 7,
-        },
+        {V4DEV_LED, V4ROLE_STATUS, 0, 0, 7},
         // USER LED (GPIO8, active-high)
-        {
-            .kind = V4DEV_LED,
-            .role = V4ROLE_USER,
-            .index = 0,
-            .flags = 0,
-            .handle = 8,
-        },
+        {V4DEV_LED, V4ROLE_USER, 0, 0, 8},
         // Second USER LED (GPIO10, active-low)
-        {
-            .kind = V4DEV_LED,
-            .role = V4ROLE_USER,
-            .index = 1,
-            .flags = V4DEV_FLAG_ACTIVE_LOW,
-            .handle = 10,
-        },
+        {V4DEV_LED, V4ROLE_USER, 1, V4DEV_FLAG_ACTIVE_LOW, 10},
     };
 
     return span<const v4dev_desc_t>{devices, 3};

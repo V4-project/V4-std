@@ -33,11 +33,11 @@ int main()
 
   // Test descriptor initialization
   v4dev_desc_t led = {
-      .kind = V4DEV_LED,
-      .role = V4ROLE_STATUS,
-      .index = 0,
-      .flags = 0,
-      .handle = 7 // GPIO7
+      V4DEV_LED,     // kind
+      V4ROLE_STATUS, // role
+      0,             // index
+      0,             // flags
+      7              // handle (GPIO7)
   };
 
   assert(led.kind == V4DEV_LED);
@@ -49,11 +49,11 @@ int main()
 
   // Test active-low flag
   v4dev_desc_t button = {
-      .kind = V4DEV_BUTTON,
-      .role = V4ROLE_USER,
-      .index = 0,
-      .flags = V4DEV_FLAG_ACTIVE_LOW,
-      .handle = 9 // GPIO9
+      V4DEV_BUTTON,          // kind
+      V4ROLE_USER,           // role
+      0,                     // index
+      V4DEV_FLAG_ACTIVE_LOW, // flags
+      9                      // handle (GPIO9)
   };
 
   assert(button.flags & V4DEV_FLAG_ACTIVE_LOW);
