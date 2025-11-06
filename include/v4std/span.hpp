@@ -14,8 +14,7 @@
 
 #include <cstddef>
 
-namespace v4std
-{
+namespace v4std {
 
 /**
  * @brief Lightweight non-owning view over a contiguous sequence
@@ -23,34 +22,28 @@ namespace v4std
  * Minimal std::span-like implementation for C++17.
  * Provides begin(), end(), size(), empty(), and operator[].
  */
-template <typename T>
-class span
-{
- public:
+template <typename T> class span {
+public:
   using element_type = T;
   using value_type = T;
   using size_type = size_t;
-  using pointer = T*;
-  using const_pointer = const T*;
-  using reference = T&;
-  using const_reference = const T&;
-  using iterator = T*;
-  using const_iterator = const T*;
+  using pointer = T *;
+  using const_pointer = const T *;
+  using reference = T &;
+  using const_reference = const T &;
+  using iterator = T *;
+  using const_iterator = const T *;
 
   // Default constructor (empty span)
   constexpr span() noexcept : data_(nullptr), size_(0) {}
 
   // Constructor from pointer and size
   constexpr span(pointer ptr, size_type count) noexcept
-      : data_(ptr), size_(count)
-  {
-  }
+      : data_(ptr), size_(count) {}
 
   // Constructor from C-array
   template <size_t N>
-  constexpr span(element_type (&arr)[N]) noexcept : data_(arr), size_(N)
-  {
-  }
+  constexpr span(element_type (&arr)[N]) noexcept : data_(arr), size_(N) {}
 
   // Iterators
   constexpr iterator begin() const noexcept { return data_; }
@@ -59,8 +52,7 @@ class span
   constexpr const_iterator cend() const noexcept { return data_ + size_; }
 
   // Element access
-  constexpr reference operator[](size_type idx) const noexcept
-  {
+  constexpr reference operator[](size_type idx) const noexcept {
     return data_[idx];
   }
 
@@ -72,11 +64,11 @@ class span
   constexpr size_type size() const noexcept { return size_; }
   constexpr bool empty() const noexcept { return size_ == 0; }
 
- private:
+private:
   pointer data_;
   size_type size_;
 };
 
-}  // namespace v4std
+} // namespace v4std
 
-#endif  // V4STD_SPAN_HPP
+#endif // V4STD_SPAN_HPP

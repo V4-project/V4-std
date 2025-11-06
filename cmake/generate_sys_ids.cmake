@@ -5,14 +5,18 @@
 # Usage: cmake -DINPUT_FILE=... -DOUTPUT_FILE=... -P generate_sys_ids.cmake
 
 if(NOT INPUT_FILE OR NOT OUTPUT_FILE)
-  message(FATAL_ERROR "Usage: cmake -DINPUT_FILE=<def> -DOUTPUT_FILE=<h> -P generate_sys_ids.cmake")
+  message(
+    FATAL_ERROR
+      "Usage: cmake -DINPUT_FILE=<def> -DOUTPUT_FILE=<h> -P generate_sys_ids.cmake"
+  )
 endif()
 
 # Read input file
 file(READ "${INPUT_FILE}" DEF_CONTENT)
 
 # Initialize output content with header
-set(OUTPUT_CONTENT "/**
+set(OUTPUT_CONTENT
+    "/**
  * @file sys_ids.h
  * @brief V4-std SYS call ID definitions (auto-generated)
  *
@@ -47,14 +51,17 @@ foreach(LINE ${DEF_LINES})
   elseif(LINE MATCHES "^[ \t]*$")
     # Keep empty lines for formatting
     string(APPEND OUTPUT_CONTENT "\n")
-  elseif(LINE MATCHES "V4SYS_DEF\\(([A-Z0-9_]+),[ \t]*0x([0-9A-Fa-f]+),[ \t]*\"([^\"]+)\"\\)")
+  elseif(
+    LINE MATCHES
+    "V4SYS_DEF\\(([A-Z0-9_]+),[ \t]*0x([0-9A-Fa-f]+),[ \t]*\"([^\"]+)\"\\)")
     # Extract: NAME, HEX_VALUE, DESCRIPTION
     set(SYS_NAME ${CMAKE_MATCH_1})
     set(SYS_VALUE ${CMAKE_MATCH_2})
     set(SYS_DESC ${CMAKE_MATCH_3})
 
     # Generate C/C++ constant definition
-    string(APPEND OUTPUT_CONTENT "#define V4SYS_${SYS_NAME} 0x${SYS_VALUE}  /**< ${SYS_DESC} */\n")
+    string(APPEND OUTPUT_CONTENT
+           "#define V4SYS_${SYS_NAME} 0x${SYS_VALUE}  /**< ${SYS_DESC} */\n")
   elseif(LINE MATCHES "=====")
     # Keep separator lines for readability
     string(APPEND OUTPUT_CONTENT "${LINE}\n")
@@ -62,7 +69,10 @@ foreach(LINE ${DEF_LINES})
 endforeach()
 
 # Add footer
-string(APPEND OUTPUT_CONTENT "
+string(
+  APPEND
+  OUTPUT_CONTENT
+  "
 #ifdef __cplusplus
 }  // extern \"C\"
 #endif

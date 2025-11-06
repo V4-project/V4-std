@@ -16,8 +16,7 @@
 #include "v4std/span.hpp"
 #include <cstddef>
 
-namespace v4std
-{
+namespace v4std {
 
 /**
  * @brief DDT provider interface
@@ -36,9 +35,8 @@ namespace v4std
  * };
  * @endcode
  */
-class DdtProvider
-{
- public:
+class DdtProvider {
+public:
   virtual ~DdtProvider() = default;
 
   /**
@@ -54,9 +52,8 @@ class DdtProvider
  * Static class providing device search and enumeration.
  * Thread-safe for const operations after set_provider().
  */
-class Ddt
-{
- public:
+class Ddt {
+public:
   /**
    * @brief Set DDT provider
    *
@@ -65,7 +62,7 @@ class Ddt
    *
    * @param provider Pointer to platform-specific provider (must not be null)
    */
-  static void set_provider(DdtProvider* provider);
+  static void set_provider(DdtProvider *provider);
 
   /**
    * @brief Find device by kind, role, and index
@@ -77,8 +74,7 @@ class Ddt
    * @param index Index within kind/role combination (0-based)
    * @return Pointer to descriptor if found, nullptr otherwise
    */
-  static const v4dev_desc_t* find_device(v4dev_kind_t kind,
-                                         v4dev_role_t role,
+  static const v4dev_desc_t *find_device(v4dev_kind_t kind, v4dev_role_t role,
                                          uint8_t index);
 
   /**
@@ -90,7 +86,7 @@ class Ddt
    * @param role Device role
    * @return Pointer to descriptor if found, nullptr otherwise
    */
-  static const v4dev_desc_t* find_default_device(v4dev_kind_t kind,
+  static const v4dev_desc_t *find_default_device(v4dev_kind_t kind,
                                                  v4dev_role_t role);
 
   /**
@@ -108,10 +104,10 @@ class Ddt
    */
   static span<const v4dev_desc_t> get_all_devices();
 
- private:
-  static DdtProvider* provider_;
+private:
+  static DdtProvider *provider_;
 };
 
-}  // namespace v4std
+} // namespace v4std
 
-#endif  // V4STD_DDT_HPP
+#endif // V4STD_DDT_HPP

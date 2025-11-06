@@ -11,32 +11,23 @@
 // Test C++ compilation
 static_assert(sizeof(v4dev_desc_t) == 8, "v4dev_desc_t must be 8 bytes");
 
-TEST_CASE("v4dev_desc_t: Struct size")
-{
-  CHECK(sizeof(v4dev_desc_t) == 8);
-}
+TEST_CASE("v4dev_desc_t: Struct size") { CHECK(sizeof(v4dev_desc_t) == 8); }
 
-TEST_CASE("v4dev_desc_t: Device kind enum values")
-{
+TEST_CASE("v4dev_desc_t: Device kind enum values") {
   CHECK(V4DEV_LED == 1);
   CHECK(V4DEV_BUTTON == 2);
   CHECK(V4DEV_TIMER == 4);
 }
 
-TEST_CASE("v4dev_desc_t: Device role enum values")
-{
+TEST_CASE("v4dev_desc_t: Device role enum values") {
   CHECK(V4ROLE_STATUS == 1);
   CHECK(V4ROLE_USER == 2);
   CHECK(V4ROLE_CONSOLE == 4);
 }
 
-TEST_CASE("v4dev_desc_t: Device flags")
-{
-  CHECK(V4DEV_FLAG_ACTIVE_LOW == 1);
-}
+TEST_CASE("v4dev_desc_t: Device flags") { CHECK(V4DEV_FLAG_ACTIVE_LOW == 1); }
 
-TEST_CASE("v4dev_desc_t: Descriptor initialization")
-{
+TEST_CASE("v4dev_desc_t: Descriptor initialization") {
   v4dev_desc_t led = {
       V4DEV_LED,     // kind
       V4ROLE_STATUS, // role
@@ -52,8 +43,7 @@ TEST_CASE("v4dev_desc_t: Descriptor initialization")
   CHECK(led.handle == 7);
 }
 
-TEST_CASE("v4dev_desc_t: Active-low flag")
-{
+TEST_CASE("v4dev_desc_t: Active-low flag") {
   v4dev_desc_t button = {
       V4DEV_BUTTON,          // kind
       V4ROLE_USER,           // role

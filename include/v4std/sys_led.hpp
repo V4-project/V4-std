@@ -14,8 +14,7 @@
 
 #include <cstdint>
 
-namespace v4std
-{
+namespace v4std {
 
 /**
  * @brief LED HAL interface
@@ -23,9 +22,8 @@ namespace v4std
  * Platform implementations provide LED control functions.
  * These are called by the SYS handlers after DDT lookup.
  */
-class LedHal
-{
- public:
+class LedHal {
+public:
   virtual ~LedHal() = default;
 
   /**
@@ -56,7 +54,7 @@ class LedHal
  *
  * @param hal Pointer to platform-specific LED HAL
  */
-void set_led_hal(LedHal* hal);
+void set_led_hal(LedHal *hal);
 
 /**
  * @brief Register LED SYS call handlers
@@ -72,6 +70,6 @@ void set_led_hal(LedHal* hal);
  */
 void register_led_sys_handlers();
 
-}  // namespace v4std
+} // namespace v4std
 
-#endif  // V4STD_SYS_LED_HPP
+#endif // V4STD_SYS_LED_HPP

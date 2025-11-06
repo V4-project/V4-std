@@ -24,21 +24,20 @@ extern "C" {
  *
  * Identifies the functional category of a device.
  */
-typedef enum
-{
-  V4DEV_NONE = 0,    /**< Undefined/invalid device */
-  V4DEV_LED = 1,     /**< LED (digital output) */
-  V4DEV_BUTTON = 2,  /**< Button (digital input) */
-  V4DEV_BUZZER = 3,  /**< Buzzer (PWM output) */
-  V4DEV_TIMER = 4,   /**< Timer (millis/micros) */
-  V4DEV_UART = 5,    /**< UART (serial communication) */
-  V4DEV_I2C = 6,     /**< I2C bus */
-  V4DEV_SPI = 7,     /**< SPI bus */
-  V4DEV_ADC = 8,     /**< ADC (analog input) */
-  V4DEV_PWM = 9,     /**< PWM output */
+typedef enum {
+  V4DEV_NONE = 0,     /**< Undefined/invalid device */
+  V4DEV_LED = 1,      /**< LED (digital output) */
+  V4DEV_BUTTON = 2,   /**< Button (digital input) */
+  V4DEV_BUZZER = 3,   /**< Buzzer (PWM output) */
+  V4DEV_TIMER = 4,    /**< Timer (millis/micros) */
+  V4DEV_UART = 5,     /**< UART (serial communication) */
+  V4DEV_I2C = 6,      /**< I2C bus */
+  V4DEV_SPI = 7,      /**< SPI bus */
+  V4DEV_ADC = 8,      /**< ADC (analog input) */
+  V4DEV_PWM = 9,      /**< PWM output */
   V4DEV_STORAGE = 10, /**< Storage (key-value store) */
   V4DEV_DISPLAY = 11, /**< Display controller */
-  V4DEV_RNG = 12,    /**< Random number generator */
+  V4DEV_RNG = 12,     /**< Random number generator */
 } v4dev_kind_t;
 
 /**
@@ -47,20 +46,20 @@ typedef enum
  * Distinguishes the purpose/usage of devices of the same kind.
  * Allows multiple LEDs, buttons, etc. to be differentiated.
  */
-typedef enum
-{
-  V4ROLE_NONE = 0,   /**< Undefined/invalid role */
-  V4ROLE_STATUS = 1, /**< Status indicator (e.g., status LED) */
-  V4ROLE_USER = 2,   /**< User interaction (e.g., user button) */
-  V4ROLE_POWER = 3,  /**< Power control */
+typedef enum {
+  V4ROLE_NONE = 0,    /**< Undefined/invalid role */
+  V4ROLE_STATUS = 1,  /**< Status indicator (e.g., status LED) */
+  V4ROLE_USER = 2,    /**< User interaction (e.g., user button) */
+  V4ROLE_POWER = 3,   /**< Power control */
   V4ROLE_CONSOLE = 4, /**< Console communication (e.g., console UART) */
-  V4ROLE_DEBUG = 5,  /**< Debug interface */
+  V4ROLE_DEBUG = 5,   /**< Debug interface */
 } v4dev_role_t;
 
 /**
  * @brief Device descriptor flags
  */
-#define V4DEV_FLAG_ACTIVE_LOW (1 << 0) /**< Active-low signal (inverted logic) */
+#define V4DEV_FLAG_ACTIVE_LOW                                                  \
+  (1 << 0) /**< Active-low signal (inverted logic) */
 
 /**
  * @brief Device descriptor (8 bytes, POD type)
@@ -68,12 +67,11 @@ typedef enum
  * Compact representation of a hardware device.
  * Platform-specific DDT providers populate arrays of these descriptors.
  */
-typedef struct
-{
-  uint8_t kind;   /**< Device type (v4dev_kind_t) */
-  uint8_t role;   /**< Device role (v4dev_role_t) */
-  uint8_t index;  /**< Index within kind/role combination (0-based) */
-  uint8_t flags;  /**< Configuration flags (V4DEV_FLAG_*) */
+typedef struct {
+  uint8_t kind;    /**< Device type (v4dev_kind_t) */
+  uint8_t role;    /**< Device role (v4dev_role_t) */
+  uint8_t index;   /**< Index within kind/role combination (0-based) */
+  uint8_t flags;   /**< Configuration flags (V4DEV_FLAG_*) */
   uint32_t handle; /**< Platform-specific handle (GPIO pin, pointer, etc.) */
 } v4dev_desc_t;
 

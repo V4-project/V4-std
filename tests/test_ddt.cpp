@@ -11,11 +11,9 @@
 using namespace v4std;
 
 // Mock DDT provider for testing
-class MockDdtProvider : public DdtProvider
-{
- public:
-  span<const v4dev_desc_t> get_devices() const override
-  {
+class MockDdtProvider : public DdtProvider {
+public:
+  span<const v4dev_desc_t> get_devices() const override {
     static constexpr v4dev_desc_t devices[] = {
         // STATUS LED (GPIO7, active-high)
         {V4DEV_LED, V4ROLE_STATUS, 0, 0, 7},
@@ -38,19 +36,17 @@ class MockDdtProvider : public DdtProvider
 // Global provider instance for tests
 static MockDdtProvider g_provider;
 
-TEST_CASE("DDT: get_all_devices")
-{
+TEST_CASE("DDT: get_all_devices") {
   Ddt::set_provider(&g_provider);
 
   auto devices = Ddt::get_all_devices();
   CHECK(devices.size() == 6);
 }
 
-TEST_CASE("DDT: find_device - exact match")
-{
+TEST_CASE("DDT: find_device - exact match") {
   Ddt::set_provider(&g_provider);
 
-  auto* led = Ddt::find_device(V4DEV_LED, V4ROLE_STATUS, 0);
+  auto *led = Ddt::find_device(V4DEV_LED, V4ROLE_STATUS, 0);
   REQUIRE(led != nullptr);
   CHECK(led->kind == V4DEV_LED);
   CHECK(led->role == V4ROLE_STATUS);
@@ -58,30 +54,27 @@ TEST_CASE("DDT: find_device - exact match")
   CHECK(led->handle == 7);
 }
 
-TEST_CASE("DDT: find_device - different index")
-{
+TEST_CASE("DDT: find_device - different index") {
   Ddt::set_provider(&g_provider);
 
-  auto* led = Ddt::find_device(V4DEV_LED, V4ROLE_USER, 1);
+  auto *led = Ddt::find_device(V4DEV_LED, V4ROLE_USER, 1);
   REQUIRE(led != nullptr);
   CHECK(led->index == 1);
   CHECK(led->handle == 10);
   CHECK((led->flags & V4DEV_FLAG_ACTIVE_LOW) != 0);
 }
 
-TEST_CASE("DDT: find_device - not found")
-{
+TEST_CASE("DDT: find_device - not found") {
   Ddt::set_provider(&g_provider);
 
-  auto* led = Ddt::find_device(V4DEV_LED, V4ROLE_STATUS, 99);
+  auto *led = Ddt::find_device(V4DEV_LED, V4ROLE_STATUS, 99);
   CHECK(led == nullptr);
 }
 
-TEST_CASE("DDT: find_default_device")
-{
+TEST_CASE("DDT: find_default_device") {
   Ddt::set_provider(&g_provider);
 
-  auto* button = Ddt::find_default_device(V4DEV_BUTTON, V4ROLE_USER);
+  auto *button = Ddt::find_default_device(V4DEV_BUTTON, V4ROLE_USER);
   REQUIRE(button != nullptr);
   CHECK(button->kind == V4DEV_BUTTON);
   CHECK(button->role == V4ROLE_USER);
@@ -89,78 +82,66 @@ TEST_CASE("DDT: find_default_device")
   CHECK(button->handle == 9);
 }
 
-TEST_CASE("DDT: count_devices")
-{
+TEST_CASE("DDT: count_devices") {
   Ddt::set_provider(&g_provider);
 
-  SUBCASE("LED count")
-  {
+  SUBCASE("LED count") {
     size_t led_count = Ddt::count_devices(V4DEV_LED);
     CHECK(led_count == 3);
   }
 
-  SUBCASE("BUTTON count")
-  {
+  SUBCASE("BUTTON count") {
     size_t button_count = Ddt::count_devices(V4DEV_BUTTON);
     CHECK(button_count == 1);
   }
 
-  SUBCASE("UART count")
-  {
+  SUBCASE("UART count") {
     size_t uart_count = Ddt::count_devices(V4DEV_UART);
     CHECK(uart_count == 1);
   }
 
-  SUBCASE("TIMER count")
-  {
+  SUBCASE("TIMER count") {
     size_t timer_count = Ddt::count_devices(V4DEV_TIMER);
     CHECK(timer_count == 1);
   }
 
-  SUBCASE("I2C count (not present)")
-  {
+  SUBCASE("I2C count (not present)") {
     size_t i2c_count = Ddt::count_devices(V4DEV_I2C);
     CHECK(i2c_count == 0);
   }
 }
 
-TEST_CASE("DDT: Find UART by role")
-{
+TEST_CASE("DDT: Find UART by role") {
   Ddt::set_provider(&g_provider);
 
-  auto* uart = Ddt::find_default_device(V4DEV_UART, V4ROLE_CONSOLE);
+  auto *uart = Ddt::find_default_device(V4DEV_UART, V4ROLE_CONSOLE);
   REQUIRE(uart != nullptr);
   CHECK(uart->kind == V4DEV_UART);
   CHECK(uart->role == V4ROLE_CONSOLE);
 }
 
-TEST_CASE("DDT: Find TIMER")
-{
+TEST_CASE("DDT: Find TIMER") {
   Ddt::set_provider(&g_provider);
 
-  auto* timer = Ddt::find_default_device(V4DEV_TIMER, V4ROLE_STATUS);
+  auto *timer = Ddt::find_default_device(V4DEV_TIMER, V4ROLE_STATUS);
   REQUIRE(timer != nullptr);
   CHECK(timer->kind == V4DEV_TIMER);
 }
 
-TEST_CASE("DDT: Null provider behavior")
-{
+TEST_CASE("DDT: Null provider behavior") {
   Ddt::set_provider(nullptr);
 
-  SUBCASE("get_all_devices returns empty")
-  {
+  SUBCASE("get_all_devices returns empty") {
     auto devices = Ddt::get_all_devices();
     CHECK(devices.empty());
   }
 
-  SUBCASE("find_device returns nullptr")
-  {
-    auto* led = Ddt::find_device(V4DEV_LED, V4ROLE_STATUS, 0);
+  SUBCASE("find_device returns nullptr") {
+    auto *led = Ddt::find_device(V4DEV_LED, V4ROLE_STATUS, 0);
     CHECK(led == nullptr);
   }
 
-  SUBCASE("count_devices returns 0")
-  {
+  SUBCASE("count_devices returns 0") {
     size_t count = Ddt::count_devices(V4DEV_LED);
     CHECK(count == 0);
   }

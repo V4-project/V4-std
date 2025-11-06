@@ -36,15 +36,15 @@ set(V4SYS_IDS_H "${PROJECT_BINARY_DIR}/generated/v4std/sys_ids.h")
 
 add_custom_command(
   OUTPUT "${V4SYS_IDS_H}"
-  COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/generated/v4std"
-  COMMAND ${CMAKE_COMMAND}
-          -DINPUT_FILE=${V4SYS_IDS_DEF}
-          -DOUTPUT_FILE=${V4SYS_IDS_H}
-          -P ${PROJECT_SOURCE_DIR}/cmake/generate_sys_ids.cmake
-  DEPENDS "${V4SYS_IDS_DEF}" "${PROJECT_SOURCE_DIR}/cmake/generate_sys_ids.cmake"
+  COMMAND ${CMAKE_COMMAND} -E make_directory
+          "${PROJECT_BINARY_DIR}/generated/v4std"
+  COMMAND
+    ${CMAKE_COMMAND} -DINPUT_FILE=${V4SYS_IDS_DEF} -DOUTPUT_FILE=${V4SYS_IDS_H}
+    -P ${PROJECT_SOURCE_DIR}/cmake/generate_sys_ids.cmake
+  DEPENDS "${V4SYS_IDS_DEF}"
+          "${PROJECT_SOURCE_DIR}/cmake/generate_sys_ids.cmake"
   COMMENT "Generating sys_ids.h from v4sys_ids.def"
-  VERBATIM
-)
+  VERBATIM)
 
 add_custom_target(generate_sys_ids DEPENDS "${V4SYS_IDS_H}")
 
@@ -53,13 +53,8 @@ add_custom_target(generate_sys_ids DEPENDS "${V4SYS_IDS_H}")
 # ============================================================================
 
 # V4Std library sources
-set(V4STD_SOURCES
-    src/ddt.cpp
-    src/sys_handlers.cpp
-    src/sys_led.cpp
-    # src/sys_button.cpp
-    # src/sys_timer.cpp
-    # src/capability.cpp
+set(V4STD_SOURCES src/ddt.cpp src/sys_handlers.cpp src/sys_led.cpp
+                  # src/sys_button.cpp src/sys_timer.cpp src/capability.cpp
 )
 
 add_library(v4std STATIC ${V4STD_SOURCES} "${V4SYS_IDS_H}")
@@ -88,15 +83,17 @@ if(V4STD_BUILD_TESTS)
     add_executable(${TEST_NAME} ${TEST_SOURCE})
     target_include_directories(${TEST_NAME} PRIVATE ${DOCTEST_INCLUDE_DIR})
     target_link_libraries(${TEST_NAME} PRIVATE v4std)
-    target_compile_definitions(${TEST_NAME} PRIVATE DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS)
+    target_compile_definitions(
+      ${TEST_NAME} PRIVATE DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS)
     add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
   endfunction()
 
   # DDT types test
   add_executable(test_ddt_types tests/test_ddt_types.cpp)
-  target_include_directories(test_ddt_types PRIVATE ${DOCTEST_INCLUDE_DIR}
-                                                     ${PROJECT_SOURCE_DIR}/include)
-  target_compile_definitions(test_ddt_types PRIVATE DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS)
+  target_include_directories(
+    test_ddt_types PRIVATE ${DOCTEST_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/include)
+  target_compile_definitions(
+    test_ddt_types PRIVATE DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS)
   add_test(NAME test_ddt_types COMMAND test_ddt_types)
 
   # DDT API test
@@ -118,8 +115,7 @@ endif()
 # ============================================================================
 
 if(V4STD_BUILD_EXAMPLES)
-  # Examples will be added in subsequent commits
-  # add_subdirectory(examples)
+  # Examples will be added in subsequent commits add_subdirectory(examples)
 endif()
 
 # ============================================================================

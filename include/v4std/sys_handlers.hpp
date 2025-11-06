@@ -16,8 +16,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace v4std
-{
+namespace v4std {
 
 /**
  * @brief SYS call handler function signature
@@ -32,10 +31,8 @@ namespace v4std
  * @param arg2 Third argument (often: index or value)
  * @return Result value (operation-specific)
  */
-using SysHandler = int32_t (*)(uint16_t sys_id,
-                                int32_t arg0,
-                                int32_t arg1,
-                                int32_t arg2);
+using SysHandler = int32_t (*)(uint16_t sys_id, int32_t arg0, int32_t arg1,
+                               int32_t arg2);
 
 /**
  * @brief Register a SYS call handler
@@ -84,10 +81,8 @@ SysHandler get_sys_handler(uint16_t sys_id);
  * @param arg2 Third argument
  * @return Handler result, or -1 if no handler registered
  */
-int32_t invoke_sys_handler(uint16_t sys_id,
-                            int32_t arg0,
-                            int32_t arg1,
-                            int32_t arg2);
+int32_t invoke_sys_handler(uint16_t sys_id, int32_t arg0, int32_t arg1,
+                           int32_t arg2);
 
 /**
  * @brief Clear all registered SYS handlers
@@ -104,6 +99,6 @@ void clear_sys_handlers();
  */
 size_t get_sys_handler_count();
 
-}  // namespace v4std
+} // namespace v4std
 
-#endif  // V4STD_SYS_HANDLERS_HPP
+#endif // V4STD_SYS_HANDLERS_HPP

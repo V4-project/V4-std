@@ -9,44 +9,36 @@
 #include "v4std/sys_handlers.hpp"
 #include "v4std/sys_ids.h"
 
-namespace v4std
-{
+namespace v4std {
 
 // Global LED HAL pointer
-static LedHal* led_hal = nullptr;
+static LedHal *led_hal = nullptr;
 
-void set_led_hal(LedHal* hal)
-{
-  led_hal = hal;
-}
+void set_led_hal(LedHal *hal) { led_hal = hal; }
 
 // Helper: Find LED device and validate
-static const v4dev_desc_t* find_led(int32_t kind, int32_t role, int32_t index)
-{
+static const v4dev_desc_t *find_led(int32_t kind, int32_t role, int32_t index) {
   if (kind != V4DEV_LED) {
     return nullptr;
   }
 
   return Ddt::find_device(static_cast<v4dev_kind_t>(kind),
-                           static_cast<v4dev_role_t>(role),
-                           static_cast<uint8_t>(index));
+                          static_cast<v4dev_role_t>(role),
+                          static_cast<uint8_t>(index));
 }
 
 // SYS_LED_ON handler
-static int32_t sys_led_on(uint16_t sys_id,
-                           int32_t arg0,
-                           int32_t arg1,
-                           int32_t arg2)
-{
-  (void)sys_id;  // Unused
+static int32_t sys_led_on(uint16_t sys_id, int32_t arg0, int32_t arg1,
+                          int32_t arg2) {
+  (void)sys_id; // Unused
 
   if (!led_hal) {
-    return 0;  // Failure: no HAL
+    return 0; // Failure: no HAL
   }
 
-  const v4dev_desc_t* led = find_led(arg0, arg1, arg2);
+  const v4dev_desc_t *led = find_led(arg0, arg1, arg2);
   if (!led) {
-    return 0;  // Failure: device not found
+    return 0; // Failure: device not found
   }
 
   bool active_low = (led->flags & V4DEV_FLAG_ACTIVE_LOW) != 0;
@@ -56,18 +48,15 @@ static int32_t sys_led_on(uint16_t sys_id,
 }
 
 // SYS_LED_OFF handler
-static int32_t sys_led_off(uint16_t sys_id,
-                            int32_t arg0,
-                            int32_t arg1,
-                            int32_t arg2)
-{
+static int32_t sys_led_off(uint16_t sys_id, int32_t arg0, int32_t arg1,
+                           int32_t arg2) {
   (void)sys_id;
 
   if (!led_hal) {
     return 0;
   }
 
-  const v4dev_desc_t* led = find_led(arg0, arg1, arg2);
+  const v4dev_desc_t *led = find_led(arg0, arg1, arg2);
   if (!led) {
     return 0;
   }
@@ -79,18 +68,15 @@ static int32_t sys_led_off(uint16_t sys_id,
 }
 
 // SYS_LED_TOGGLE handler
-static int32_t sys_led_toggle(uint16_t sys_id,
-                               int32_t arg0,
-                               int32_t arg1,
-                               int32_t arg2)
-{
+static int32_t sys_led_toggle(uint16_t sys_id, int32_t arg0, int32_t arg1,
+                              int32_t arg2) {
   (void)sys_id;
 
   if (!led_hal) {
     return 0;
   }
 
-  const v4dev_desc_t* led = find_led(arg0, arg1, arg2);
+  const v4dev_desc_t *led = find_led(arg0, arg1, arg2);
   if (!led) {
     return 0;
   }
@@ -105,11 +91,8 @@ static int32_t sys_led_toggle(uint16_t sys_id,
 }
 
 // SYS_LED_SET handler
-static int32_t sys_led_set(uint16_t sys_id,
-                            int32_t arg0,
-                            int32_t arg1,
-                            int32_t arg2)
-{
+static int32_t sys_led_set(uint16_t sys_id, int32_t arg0, int32_t arg1,
+                           int32_t arg2) {
   (void)sys_id;
 
   if (!led_hal) {
@@ -139,7 +122,7 @@ static int32_t sys_led_set(uint16_t sys_id,
   uint8_t index = (arg2 >> 16) & 0xFF;
   bool state = (arg2 & 0xFFFF) != 0;
 
-  const v4dev_desc_t* led = find_led(arg0, arg1, index);
+  const v4dev_desc_t *led = find_led(arg0, arg1, index);
   if (!led) {
     return 0;
   }
@@ -151,18 +134,15 @@ static int32_t sys_led_set(uint16_t sys_id,
 }
 
 // SYS_LED_GET handler
-static int32_t sys_led_get(uint16_t sys_id,
-                            int32_t arg0,
-                            int32_t arg1,
-                            int32_t arg2)
-{
+static int32_t sys_led_get(uint16_t sys_id, int32_t arg0, int32_t arg1,
+                           int32_t arg2) {
   (void)sys_id;
 
   if (!led_hal) {
     return 0;
   }
 
-  const v4dev_desc_t* led = find_led(arg0, arg1, arg2);
+  const v4dev_desc_t *led = find_led(arg0, arg1, arg2);
   if (!led) {
     return 0;
   }
@@ -173,8 +153,7 @@ static int32_t sys_led_get(uint16_t sys_id,
   return state ? 1 : 0;
 }
 
-void register_led_sys_handlers()
-{
+void register_led_sys_handlers() {
   register_sys_handler(V4SYS_LED_ON, sys_led_on);
   register_sys_handler(V4SYS_LED_OFF, sys_led_off);
   register_sys_handler(V4SYS_LED_TOGGLE, sys_led_toggle);
@@ -182,4 +161,4 @@ void register_led_sys_handlers()
   register_sys_handler(V4SYS_LED_GET, sys_led_get);
 }
 
-}  // namespace v4std
+} // namespace v4std

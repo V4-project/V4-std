@@ -8,8 +8,7 @@
 
 #include "v4std/sys_ids.h"
 
-TEST_CASE("SYS IDs: LED operations range (0x0100-0x01FF)")
-{
+TEST_CASE("SYS IDs: LED operations range (0x0100-0x01FF)") {
   CHECK(V4SYS_LED_ON == 0x0100);
   CHECK(V4SYS_LED_OFF == 0x0101);
   CHECK(V4SYS_LED_TOGGLE == 0x0102);
@@ -17,69 +16,58 @@ TEST_CASE("SYS IDs: LED operations range (0x0100-0x01FF)")
   CHECK(V4SYS_LED_GET == 0x0110);
 }
 
-TEST_CASE("SYS IDs: BUTTON operations range (0x0200-0x02FF)")
-{
+TEST_CASE("SYS IDs: BUTTON operations range (0x0200-0x02FF)") {
   CHECK(V4SYS_BUTTON_READ == 0x0200);
   CHECK(V4SYS_BUTTON_WAIT == 0x0201);
 }
 
-TEST_CASE("SYS IDs: TIMER operations range (0x0300-0x03FF)")
-{
+TEST_CASE("SYS IDs: TIMER operations range (0x0300-0x03FF)") {
   CHECK(V4SYS_TIMER_START == 0x0300);
   CHECK(V4SYS_TIMER_STOP == 0x0301);
   CHECK(V4SYS_TIMER_ONESHOT == 0x0302);
   CHECK(V4SYS_TIMER_RUNNING == 0x0310);
 }
 
-TEST_CASE("SYS IDs: UART operations range (0x0400-0x04FF)")
-{
+TEST_CASE("SYS IDs: UART operations range (0x0400-0x04FF)") {
   CHECK(V4SYS_UART_READ == 0x0400);
   CHECK(V4SYS_UART_WRITE == 0x0401);
   CHECK(V4SYS_UART_AVAILABLE == 0x0402);
 }
 
-TEST_CASE("SYS IDs: I2C operations range (0x0500-0x05FF)")
-{
+TEST_CASE("SYS IDs: I2C operations range (0x0500-0x05FF)") {
   CHECK(V4SYS_I2C_READ_REG == 0x0500);
   CHECK(V4SYS_I2C_WRITE_REG == 0x0501);
 }
 
-TEST_CASE("SYS IDs: SPI operations range (0x0600-0x06FF)")
-{
+TEST_CASE("SYS IDs: SPI operations range (0x0600-0x06FF)") {
   CHECK(V4SYS_SPI_TRANSFER == 0x0600);
 }
 
-TEST_CASE("SYS IDs: ADC operations range (0x0700-0x07FF)")
-{
+TEST_CASE("SYS IDs: ADC operations range (0x0700-0x07FF)") {
   CHECK(V4SYS_ADC_READ == 0x0700);
 }
 
-TEST_CASE("SYS IDs: PWM operations range (0x0800-0x08FF)")
-{
+TEST_CASE("SYS IDs: PWM operations range (0x0800-0x08FF)") {
   CHECK(V4SYS_PWM_SET == 0x0800);
   CHECK(V4SYS_PWM_START == 0x0801);
   CHECK(V4SYS_PWM_STOP == 0x0802);
 }
 
-TEST_CASE("SYS IDs: STORAGE operations range (0x0900-0x09FF)")
-{
+TEST_CASE("SYS IDs: STORAGE operations range (0x0900-0x09FF)") {
   CHECK(V4SYS_STORAGE_READ == 0x0900);
   CHECK(V4SYS_STORAGE_WRITE == 0x0901);
 }
 
-TEST_CASE("SYS IDs: DISPLAY operations range (0x0A00-0x0AFF)")
-{
+TEST_CASE("SYS IDs: DISPLAY operations range (0x0A00-0x0AFF)") {
   CHECK(V4SYS_DISPLAY_PUTC == 0x0A00);
   CHECK(V4SYS_DISPLAY_CLEAR == 0x0A01);
 }
 
-TEST_CASE("SYS IDs: RNG operations range (0x0B00-0x0BFF)")
-{
+TEST_CASE("SYS IDs: RNG operations range (0x0B00-0x0BFF)") {
   CHECK(V4SYS_RNG_READ == 0x0B00);
 }
 
-TEST_CASE("SYS IDs: System/Capability operations range (0x0F00-0x0FFF)")
-{
+TEST_CASE("SYS IDs: System/Capability operations range (0x0F00-0x0FFF)") {
   CHECK(V4SYS_CAP_COUNT == 0x0F00);
   CHECK(V4SYS_CAP_EXISTS == 0x0F01);
   CHECK(V4SYS_CAP_FLAGS == 0x0F02);
@@ -88,37 +76,31 @@ TEST_CASE("SYS IDs: System/Capability operations range (0x0F00-0x0FFF)")
   CHECK(V4SYS_SYS_PLATFORM == 0x0FF1);
 }
 
-TEST_CASE("SYS IDs: All IDs are in V4-std range (0x0100-0x0FFF)")
-{
-  SUBCASE("LED")
-  {
+TEST_CASE("SYS IDs: All IDs are in V4-std range (0x0100-0x0FFF)") {
+  SUBCASE("LED") {
     CHECK(V4SYS_LED_ON >= 0x0100);
     CHECK(V4SYS_LED_ON <= 0x0FFF);
     CHECK(V4SYS_LED_GET >= 0x0100);
     CHECK(V4SYS_LED_GET <= 0x0FFF);
   }
 
-  SUBCASE("BUTTON")
-  {
+  SUBCASE("BUTTON") {
     CHECK(V4SYS_BUTTON_READ >= 0x0100);
     CHECK(V4SYS_BUTTON_READ <= 0x0FFF);
   }
 
-  SUBCASE("TIMER")
-  {
+  SUBCASE("TIMER") {
     CHECK(V4SYS_TIMER_START >= 0x0100);
     CHECK(V4SYS_TIMER_START <= 0x0FFF);
   }
 
-  SUBCASE("System")
-  {
+  SUBCASE("System") {
     CHECK(V4SYS_SYS_PLATFORM >= 0x0100);
     CHECK(V4SYS_SYS_PLATFORM <= 0x0FFF);
   }
 }
 
-TEST_CASE("SYS IDs: No overlapping IDs between categories")
-{
+TEST_CASE("SYS IDs: No overlapping IDs between categories") {
   // Verify each category is in its designated range
   CHECK((V4SYS_LED_ON & 0xFF00) == 0x0100);
   CHECK((V4SYS_BUTTON_READ & 0xFF00) == 0x0200);
