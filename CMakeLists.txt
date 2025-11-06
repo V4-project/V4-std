@@ -80,31 +80,37 @@ add_dependencies(v4std generate_sys_ids)
 if(V4STD_BUILD_TESTS)
   enable_testing()
 
+  # Doctest include directory
+  set(DOCTEST_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/tests/vendor/doctest)
+
+  # Helper function to add test executables
+  function(add_v4std_test TEST_NAME TEST_SOURCE)
+    add_executable(${TEST_NAME} ${TEST_SOURCE})
+    target_include_directories(${TEST_NAME} PRIVATE ${DOCTEST_INCLUDE_DIR})
+    target_link_libraries(${TEST_NAME} PRIVATE v4std)
+    target_compile_definitions(${TEST_NAME} PRIVATE DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS)
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+  endfunction()
+
   # DDT types test
   add_executable(test_ddt_types tests/test_ddt_types.cpp)
-  target_include_directories(test_ddt_types PRIVATE ${PROJECT_SOURCE_DIR}/include)
+  target_include_directories(test_ddt_types PRIVATE ${DOCTEST_INCLUDE_DIR}
+                                                     ${PROJECT_SOURCE_DIR}/include)
+  target_compile_definitions(test_ddt_types PRIVATE DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS)
   add_test(NAME test_ddt_types COMMAND test_ddt_types)
 
   # DDT API test
-  add_executable(test_ddt tests/test_ddt.cpp)
-  target_link_libraries(test_ddt PRIVATE v4std)
-  add_test(NAME test_ddt COMMAND test_ddt)
+  add_v4std_test(test_ddt tests/test_ddt.cpp)
 
   # SYS IDs test
-  add_executable(test_sys_ids tests/test_sys_ids.cpp)
-  target_link_libraries(test_sys_ids PRIVATE v4std)
+  add_v4std_test(test_sys_ids tests/test_sys_ids.cpp)
   add_dependencies(test_sys_ids generate_sys_ids)
-  add_test(NAME test_sys_ids COMMAND test_sys_ids)
 
   # SYS handlers test
-  add_executable(test_sys_handlers tests/test_sys_handlers.cpp)
-  target_link_libraries(test_sys_handlers PRIVATE v4std)
-  add_test(NAME test_sys_handlers COMMAND test_sys_handlers)
+  add_v4std_test(test_sys_handlers tests/test_sys_handlers.cpp)
 
   # LED SYS test
-  add_executable(test_sys_led tests/test_sys_led.cpp)
-  target_link_libraries(test_sys_led PRIVATE v4std)
-  add_test(NAME test_sys_led COMMAND test_sys_led)
+  add_v4std_test(test_sys_led tests/test_sys_led.cpp)
 endif()
 
 # ============================================================================

@@ -3,13 +3,14 @@
  * @brief Tests for LED SYS call implementations
  */
 
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
+
 #include "v4std/ddt.hpp"
 #include "v4std/ddt_types.h"
 #include "v4std/sys_handlers.hpp"
 #include "v4std/sys_ids.h"
 #include "v4std/sys_led.hpp"
-#include <cassert>
-#include <cstdio>
 #include <unordered_map>
 
 using namespace v4std;
@@ -61,216 +62,226 @@ class MockDdtProvider : public DdtProvider
   }
 };
 
-int main()
-{
-  MockLedHal hal;
-  MockDdtProvider provider;
+// Global instances for tests
+static MockLedHal g_hal;
+static MockDdtProvider g_provider;
 
-  // Initialize
-  set_led_hal(&hal);
-  Ddt::set_provider(&provider);
+TEST_CASE("LED SYS: LED_ON (active-high LED)")
+{
+  g_hal.clear();
+  set_led_hal(&g_hal);
+  Ddt::set_provider(&g_provider);
   register_led_sys_handlers();
 
-  // Test: LED_ON (active-high LED)
-  {
-    hal.clear();
+  int32_t result =
+      invoke_sys_handler(V4SYS_LED_ON, V4DEV_LED, V4ROLE_STATUS, 0);
 
-    int32_t result =
-        invoke_sys_handler(V4SYS_LED_ON, V4DEV_LED, V4ROLE_STATUS, 0);
+  CHECK(result == 1);  // Success
+  CHECK(g_hal.led_states[7] == true);  // GPIO7 should be high
+}
 
-    assert(result == 1);  // Success
-    assert(hal.led_states[7] == true);  // GPIO7 should be high
+TEST_CASE("LED SYS: LED_OFF (active-high LED)")
+{
+  g_hal.clear();
+  set_led_hal(&g_hal);
+  Ddt::set_provider(&g_provider);
+  register_led_sys_handlers();
 
-    printf("✓ LED_ON works for active-high LED\n");
-  }
+  g_hal.led_states[7] = true;  // Start with LED on
 
-  // Test: LED_OFF (active-high LED)
-  {
-    hal.clear();
-    hal.led_states[7] = true;  // Start with LED on
+  int32_t result =
+      invoke_sys_handler(V4SYS_LED_OFF, V4DEV_LED, V4ROLE_STATUS, 0);
 
-    int32_t result =
-        invoke_sys_handler(V4SYS_LED_OFF, V4DEV_LED, V4ROLE_STATUS, 0);
+  CHECK(result == 1);
+  CHECK(g_hal.led_states[7] == false);  // GPIO7 should be low
+}
 
-    assert(result == 1);
-    assert(hal.led_states[7] == false);  // GPIO7 should be low
+TEST_CASE("LED SYS: LED_ON (active-low LED)")
+{
+  g_hal.clear();
+  set_led_hal(&g_hal);
+  Ddt::set_provider(&g_provider);
+  register_led_sys_handlers();
 
-    printf("✓ LED_OFF works for active-high LED\n");
-  }
+  int32_t result =
+      invoke_sys_handler(V4SYS_LED_ON, V4DEV_LED, V4ROLE_USER, 1);
 
-  // Test: LED_ON (active-low LED)
-  {
-    hal.clear();
+  CHECK(result == 1);
+  // GPIO10 is active-low, so logical ON means physical LOW
+  CHECK(g_hal.led_states[10] == false);
+}
 
-    int32_t result =
-        invoke_sys_handler(V4SYS_LED_ON, V4DEV_LED, V4ROLE_USER, 1);
+TEST_CASE("LED SYS: LED_OFF (active-low LED)")
+{
+  g_hal.clear();
+  set_led_hal(&g_hal);
+  Ddt::set_provider(&g_provider);
+  register_led_sys_handlers();
 
-    assert(result == 1);
-    // GPIO10 is active-low, so logical ON means physical LOW
-    assert(hal.led_states[10] == false);
+  g_hal.led_states[10] = false;  // Start with LED on (physical low)
 
-    printf("✓ LED_ON works for active-low LED (inverts signal)\n");
-  }
+  int32_t result =
+      invoke_sys_handler(V4SYS_LED_OFF, V4DEV_LED, V4ROLE_USER, 1);
 
-  // Test: LED_OFF (active-low LED)
-  {
-    hal.clear();
-    hal.led_states[10] = false;  // Start with LED on (physical low)
+  CHECK(result == 1);
+  // Logical OFF means physical HIGH for active-low
+  CHECK(g_hal.led_states[10] == true);
+}
 
-    int32_t result =
-        invoke_sys_handler(V4SYS_LED_OFF, V4DEV_LED, V4ROLE_USER, 1);
+TEST_CASE("LED SYS: LED_TOGGLE")
+{
+  g_hal.clear();
+  set_led_hal(&g_hal);
+  Ddt::set_provider(&g_provider);
+  register_led_sys_handlers();
 
-    assert(result == 1);
-    // Logical OFF means physical HIGH for active-low
-    assert(hal.led_states[10] == true);
+  g_hal.led_states[8] = false;  // Start OFF
 
-    printf("✓ LED_OFF works for active-low LED (inverts signal)\n");
-  }
+  // Toggle ON
+  int32_t result1 =
+      invoke_sys_handler(V4SYS_LED_TOGGLE, V4DEV_LED, V4ROLE_USER, 0);
+  CHECK(result1 == 1);
+  CHECK(g_hal.led_states[8] == true);
 
-  // Test: LED_TOGGLE
-  {
-    hal.clear();
-    hal.led_states[8] = false;  // Start OFF
+  // Toggle OFF
+  int32_t result2 =
+      invoke_sys_handler(V4SYS_LED_TOGGLE, V4DEV_LED, V4ROLE_USER, 0);
+  CHECK(result2 == 1);
+  CHECK(g_hal.led_states[8] == false);
+}
 
-    // Toggle ON
-    int32_t result1 =
-        invoke_sys_handler(V4SYS_LED_TOGGLE, V4DEV_LED, V4ROLE_USER, 0);
-    assert(result1 == 1);
-    assert(hal.led_states[8] == true);
+TEST_CASE("LED SYS: LED_SET (set to ON)")
+{
+  g_hal.clear();
+  set_led_hal(&g_hal);
+  Ddt::set_provider(&g_provider);
+  register_led_sys_handlers();
 
-    // Toggle OFF
-    int32_t result2 =
-        invoke_sys_handler(V4SYS_LED_TOGGLE, V4DEV_LED, V4ROLE_USER, 0);
-    assert(result2 == 1);
-    assert(hal.led_states[8] == false);
+  // For LED_SET, we pack index and state into arg2
+  // arg2 = (index << 16) | (state & 0xFFFF)
+  int32_t arg2 = (0 << 16) | 1;  // index=0, state=1 (ON)
 
-    printf("✓ LED_TOGGLE works (toggles state)\n");
-  }
+  int32_t result =
+      invoke_sys_handler(V4SYS_LED_SET, V4DEV_LED, V4ROLE_STATUS, arg2);
 
-  // Test: LED_SET (set to ON)
-  {
-    hal.clear();
+  CHECK(result == 1);
+  CHECK(g_hal.led_states[7] == true);
+}
 
-    // For LED_SET, we pack index and state into arg2
-    // arg2 = (index << 16) | (state & 0xFFFF)
-    int32_t arg2 = (0 << 16) | 1;  // index=0, state=1 (ON)
+TEST_CASE("LED SYS: LED_SET (set to OFF)")
+{
+  g_hal.clear();
+  set_led_hal(&g_hal);
+  Ddt::set_provider(&g_provider);
+  register_led_sys_handlers();
 
-    int32_t result =
-        invoke_sys_handler(V4SYS_LED_SET, V4DEV_LED, V4ROLE_STATUS, arg2);
+  g_hal.led_states[7] = true;  // Start ON
 
-    assert(result == 1);
-    assert(hal.led_states[7] == true);
+  int32_t arg2 = (0 << 16) | 0;  // index=0, state=0 (OFF)
 
-    printf("✓ LED_SET works (set to ON)\n");
-  }
+  int32_t result =
+      invoke_sys_handler(V4SYS_LED_SET, V4DEV_LED, V4ROLE_STATUS, arg2);
 
-  // Test: LED_SET (set to OFF)
-  {
-    hal.clear();
-    hal.led_states[7] = true;  // Start ON
+  CHECK(result == 1);
+  CHECK(g_hal.led_states[7] == false);
+}
 
-    int32_t arg2 = (0 << 16) | 0;  // index=0, state=0 (OFF)
+TEST_CASE("LED SYS: LED_GET")
+{
+  g_hal.clear();
+  set_led_hal(&g_hal);
+  Ddt::set_provider(&g_provider);
+  register_led_sys_handlers();
 
-    int32_t result =
-        invoke_sys_handler(V4SYS_LED_SET, V4DEV_LED, V4ROLE_STATUS, arg2);
+  g_hal.led_states[8] = true;  // LED is ON
 
-    assert(result == 1);
-    assert(hal.led_states[7] == false);
+  int32_t result =
+      invoke_sys_handler(V4SYS_LED_GET, V4DEV_LED, V4ROLE_USER, 0);
 
-    printf("✓ LED_SET works (set to OFF)\n");
-  }
+  CHECK(result == 1);  // Returns 1 for ON
 
-  // Test: LED_GET
-  {
-    hal.clear();
-    hal.led_states[8] = true;  // LED is ON
+  g_hal.led_states[8] = false;  // LED is OFF
 
-    int32_t result =
-        invoke_sys_handler(V4SYS_LED_GET, V4DEV_LED, V4ROLE_USER, 0);
+  result = invoke_sys_handler(V4SYS_LED_GET, V4DEV_LED, V4ROLE_USER, 0);
 
-    assert(result == 1);  // Returns 1 for ON
+  CHECK(result == 0);  // Returns 0 for OFF
+}
 
-    hal.led_states[8] = false;  // LED is OFF
+TEST_CASE("LED SYS: LED_GET with active-low")
+{
+  g_hal.clear();
+  set_led_hal(&g_hal);
+  Ddt::set_provider(&g_provider);
+  register_led_sys_handlers();
 
-    result = invoke_sys_handler(V4SYS_LED_GET, V4DEV_LED, V4ROLE_USER, 0);
+  // GPIO10 is active-low
+  // Physical LOW = Logical ON
+  g_hal.led_states[10] = false;
 
-    assert(result == 0);  // Returns 0 for OFF
+  int32_t result =
+      invoke_sys_handler(V4SYS_LED_GET, V4DEV_LED, V4ROLE_USER, 1);
 
-    printf("✓ LED_GET works (returns current state)\n");
-  }
+  CHECK(result == 1);  // Should return 1 (logical ON)
+}
 
-  // Test: LED_GET with active-low
-  {
-    hal.clear();
-    // GPIO10 is active-low
-    // Physical LOW = Logical ON
-    hal.led_states[10] = false;
+TEST_CASE("LED SYS: Device not found")
+{
+  g_hal.clear();
+  set_led_hal(&g_hal);
+  Ddt::set_provider(&g_provider);
+  register_led_sys_handlers();
 
-    int32_t result =
-        invoke_sys_handler(V4SYS_LED_GET, V4DEV_LED, V4ROLE_USER, 1);
+  // Try to control non-existent LED (index 99)
+  int32_t result =
+      invoke_sys_handler(V4SYS_LED_ON, V4DEV_LED, V4ROLE_STATUS, 99);
 
-    assert(result == 1);  // Should return 1 (logical ON)
+  CHECK(result == 0);  // Failure
+}
 
-    printf("✓ LED_GET handles active-low correctly\n");
-  }
+TEST_CASE("LED SYS: Wrong device kind")
+{
+  g_hal.clear();
+  set_led_hal(&g_hal);
+  Ddt::set_provider(&g_provider);
+  register_led_sys_handlers();
 
-  // Test: Device not found
-  {
-    hal.clear();
+  // Try to use LED_ON with BUTTON kind
+  int32_t result =
+      invoke_sys_handler(V4SYS_LED_ON, V4DEV_BUTTON, V4ROLE_USER, 0);
 
-    // Try to control non-existent LED (index 99)
-    int32_t result =
-        invoke_sys_handler(V4SYS_LED_ON, V4DEV_LED, V4ROLE_STATUS, 99);
+  CHECK(result == 0);  // Failure
+}
 
-    assert(result == 0);  // Failure
+TEST_CASE("LED SYS: No HAL configured")
+{
+  g_hal.clear();
+  Ddt::set_provider(&g_provider);
+  register_led_sys_handlers();
 
-    printf("✓ LED operations return 0 when device not found\n");
-  }
+  set_led_hal(nullptr);  // Remove HAL
 
-  // Test: Wrong device kind
-  {
-    hal.clear();
+  int32_t result =
+      invoke_sys_handler(V4SYS_LED_ON, V4DEV_LED, V4ROLE_STATUS, 0);
 
-    // Try to use LED_ON with BUTTON kind
-    int32_t result =
-        invoke_sys_handler(V4SYS_LED_ON, V4DEV_BUTTON, V4ROLE_USER, 0);
+  CHECK(result == 0);  // Failure
 
-    assert(result == 0);  // Failure
+  // Restore HAL
+  set_led_hal(&g_hal);
+}
 
-    printf("✓ LED operations reject non-LED devices\n");
-  }
+TEST_CASE("LED SYS: Multiple LEDs independent")
+{
+  g_hal.clear();
+  set_led_hal(&g_hal);
+  Ddt::set_provider(&g_provider);
+  register_led_sys_handlers();
 
-  // Test: No HAL configured
-  {
-    set_led_hal(nullptr);  // Remove HAL
+  // Turn on STATUS LED
+  invoke_sys_handler(V4SYS_LED_ON, V4DEV_LED, V4ROLE_STATUS, 0);
 
-    int32_t result =
-        invoke_sys_handler(V4SYS_LED_ON, V4DEV_LED, V4ROLE_STATUS, 0);
+  // Turn off USER LED
+  invoke_sys_handler(V4SYS_LED_OFF, V4DEV_LED, V4ROLE_USER, 0);
 
-    assert(result == 0);  // Failure
-
-    // Restore HAL
-    set_led_hal(&hal);
-
-    printf("✓ LED operations fail gracefully when HAL not configured\n");
-  }
-
-  // Test: Multiple LEDs independent
-  {
-    hal.clear();
-
-    // Turn on STATUS LED
-    invoke_sys_handler(V4SYS_LED_ON, V4DEV_LED, V4ROLE_STATUS, 0);
-
-    // Turn off USER LED
-    invoke_sys_handler(V4SYS_LED_OFF, V4DEV_LED, V4ROLE_USER, 0);
-
-    assert(hal.led_states[7] == true);   // STATUS ON
-    assert(hal.led_states[8] == false);  // USER OFF
-
-    printf("✓ Multiple LEDs operate independently\n");
-  }
-
-  printf("\n✅ All LED SYS tests passed!\n");
-  return 0;
+  CHECK(g_hal.led_states[7] == true);   // STATUS ON
+  CHECK(g_hal.led_states[8] == false);  // USER OFF
 }
